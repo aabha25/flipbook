@@ -1,8 +1,18 @@
 const pages = [
+   
     "https://i.postimg.cc/KjDHscZx/page1better.jpg",
     "https://i.postimg.cc/76vtHJhw/page2better.jpg",
     "https://i.postimg.cc/P592yvmK/page3better.jpg",
-    "https://i.postimg.cc/WbfnpqYS/Whats-App-Image-2026-08-14-at-10-01-44-AM.jpg"
+    "https://i.postimg.cc/WbfnpqYS/Whats-App-Image-2026-08-14-at-10-01-44-AM.jpg",
+    "https://i.postimg.cc/65g6CRWS/page5.jpg",
+    "https://i.postimg.cc/RVyCwfSD/page6.jpg",
+    "https://i.postimg.cc/02F57mk4/page7.jpg",
+    "https://i.postimg.cc/4Nq4ptfF/page8.jpg",
+    "https://i.postimg.cc/0ySknQjZ/page9.jpg",
+    "https://i.postimg.cc/YCFrR90b/page10.jpg",
+    "https://i.postimg.cc/Qd78mtCY/page11.jpg",
+    "https://i.postimg.cc/cHPgCzbb/page12.jpg"
+
 ];
 
 const flipbook =
