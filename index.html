@@ -117,7 +117,11 @@
 
             z-index: 100;
         }
-
+        #pageCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
         #pageCover{
             position: fixed;
               top: 0px;
@@ -171,9 +175,7 @@
         </button>
 
         <div class="flipbook" id="flipbook">
-            <!-- <div id ="pageCover">.
-    <div id="pageNumber">1 / 4</div>
-    </div> -->
+              <canvas id="pageCanvas"></canvas>
         </div>
 
         <button
@@ -210,78 +212,77 @@
 
 
         let currentPage = 0;
-        let startX = 0;
-let currentX = 0;
-let isSwiping = false;
+       
+        const canvas =
+    document.getElementById("pageCanvas");
 
-        /*
-         * Create pages
-         */
-        pages.forEach((src, index) => {
+const ctx =
+    canvas.getContext("2d");
 
-            const img =
-                document.createElement("img");
+let currentImage = null;
 
-            img.src = src;
-
-            img.className = "page";
-
-            if (index !== 0) {
-                img.classList.add("hidden");
-            }
-
-            flipbook.appendChild(img);
-        });
+       
+       
 
 
-        const pageElements =
-            document.querySelectorAll(".page");
+        function loadPage(index) {
 
+    const img = new Image();
 
-        function updateUI() {
+    img.crossOrigin = "anonymous";
 
-            pageNumber.textContent =
-                `${currentPage + 1} / ${pages.length}`;
+    img.src = pages[index];
 
-            previousButton.disabled =
-                currentPage === 0;
+    img.onload = () => {
 
-            nextButton.disabled =
-                currentPage === pages.length - 1;
-        }
+        currentImage = img;
 
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
 
-        function showPage(index) {
+        drawPage();
+    };
+}function drawPage() {
 
-            if (
-                index < 0 ||
-                index >= pages.length
-            ) {
-                return;
-            }
+    if (!currentImage) return;
 
-            pageElements[currentPage]
-                .classList.add("hidden");
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
-            currentPage = index;
+    ctx.drawImage(
+        currentImage,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+}
+function showPage(index) {
 
-            pageElements[currentPage]
-                .classList.remove("hidden");
+    if (
+        index < 0 ||
+        index >= pages.length
+    ) {
+        return;
+    }
 
-            updateUI();
-        }
+    currentPage = index;
 
+    loadPage(currentPage);
 
-        function nextPage() {
-            showPage(currentPage + 1);
-        }
+    updateUI();
+} function nextPage() {
+    showPage(currentPage + 1);
+}
 
-
-        function previousPage() {
-            showPage(currentPage - 1);
-        }
-        
-        flipbook.addEventListener("touchstart", (e) => {
+function previousPage() {
+    showPage(currentPage - 1);
+}
+ flipbook.addEventListener("touchstart", (e) => {
     startX = e.touches[0].clientX;
 });
 
@@ -303,7 +304,8 @@ flipbook.addEventListener("touchend", (e) => {
     }
 });
 
-        updateUI();
+loadPage(0);
+updateUI();
 
     </script>
 
