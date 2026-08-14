@@ -1,10 +1,8 @@
 const pages = [
-  
-            "https://i.postimg.cc/KjDHscZx/page1better.jpg",
-            "https://i.postimg.cc/76vtHJhw/page2better.jpg",
-            "https://i.postimg.cc/P592yvmK/page3better.jpg",
-            "https://i.postimg.cc/WbfnpqYS/Whats-App-Image-2026-08-14-at-10-01-44-AM.jpg"
-        
+    "https://i.postimg.cc/KjDHscZx/page1better.jpg",
+    "https://i.postimg.cc/76vtHJhw/page2better.jpg",
+    "https://i.postimg.cc/P592yvmK/page3better.jpg",
+    "https://i.postimg.cc/WbfnpqYS/Whats-App-Image-2026-08-14-at-10-01-44-AM.jpg"
 ];
 
 const flipbook =
@@ -25,6 +23,11 @@ const nextButton =
 let currentPage = 0;
 let currentImage = null;
 
+
+/* =========================
+   BUTTONS
+   ========================= */
+
 previousButton.addEventListener(
     "click",
     previousPage
@@ -34,13 +37,24 @@ nextButton.addEventListener(
     "click",
     nextPage
 );
+
+
+/* =========================
+   PAGE LOADING
+   ========================= */
+
 function loadPage(index) {
+
+    if (
+        index < 0 ||
+        index >= pages.length
+    ) {
+        return;
+    }
 
     const img = new Image();
 
     img.crossOrigin = "anonymous";
-
-    img.src = pages[index];
 
     img.onload = () => {
 
@@ -54,12 +68,27 @@ function loadPage(index) {
 
         drawPage();
     };
+
+    img.onerror = () => {
+        console.error(
+            "Failed to load page:",
+            pages[index]
+        );
+    };
+
+    img.src = pages[index];
 }
 
 
+/* =========================
+   DRAW PAGE
+   ========================= */
+
 function drawPage() {
 
-    if (!currentImage) return;
+    if (!currentImage) {
+        return;
+    }
 
     ctx.clearRect(
         0,
@@ -71,28 +100,42 @@ function drawPage() {
     ctx.save();
 
     /*
-     * ZoomController controls these.
+     * Convert screen-space pan
+     * into canvas-space pan.
      */
+    const rect =
+        canvas.getBoundingClientRect();
+
     const scaleX =
-        canvas.width /
-        canvas.getBoundingClientRect().width;
+        canvas.width / rect.width;
 
     const scaleY =
-        canvas.height /
-        canvas.getBoundingClientRect().height;
+        canvas.height / rect.height;
 
+
+    /*
+     * Apply pan.
+     */
     ctx.translate(
         zoomController.offsetX * scaleX,
         zoomController.offsetY * scaleY
     );
 
+
+    /*
+     * Zoom around the center
+     * of the page.
+     */
     const centerX =
         canvas.width / 2;
 
     const centerY =
         canvas.height / 2;
 
-    ctx.translate(centerX, centerY);
+    ctx.translate(
+        centerX,
+        centerY
+    );
 
     ctx.scale(
         zoomController.zoom,
@@ -104,6 +147,10 @@ function drawPage() {
         -centerY
     );
 
+
+    /*
+     * Draw page.
+     */
     ctx.drawImage(
         currentImage,
         0,
@@ -116,6 +163,10 @@ function drawPage() {
 }
 
 
+/* =========================
+   PAGE NAVIGATION
+   ========================= */
+
 function showPage(index) {
 
     if (
@@ -127,7 +178,13 @@ function showPage(index) {
 
     currentPage = index;
 
+    /*
+     * Every new page starts
+     * at normal zoom.
+     */
     zoomController.reset();
+
+    currentImage = null;
 
     loadPage(currentPage);
 
@@ -136,25 +193,39 @@ function showPage(index) {
 
 
 function nextPage() {
-    showPage(currentPage + 1);
+
+    if (currentPage < pages.length - 1) {
+        showPage(currentPage + 1);
+    }
 }
 
 
 function previousPage() {
-    showPage(currentPage - 1);
+
+    if (currentPage > 0) {
+        showPage(currentPage - 1);
+    }
 }
 
 
-/*
- * Create zoom controller
- */
+/* =========================
+   ZOOM CONTROLLER
+   ========================= */
+
 const zoomController =
     new ZoomController(
         flipbook,
         canvas,
-        drawPage
+        drawPage,
+        nextPage,
+        previousPage
     );
 
 
+/* =========================
+   INITIAL PAGE
+   ========================= */
+
 loadPage(0);
+
 updateUI();
