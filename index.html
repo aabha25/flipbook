@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Flipbook</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: #222;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Main layout */
+        .viewer {
+            width: 100%;
+            height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 20px;
+        }
+
+        /* Flipbook */
+        .flipbook {
+            height: 100vh;
+            width: min(100vw - 140px, calc(100vh * 3 / 4));
+
+            aspect-ratio: 3 / 4;
+
+            position: relative;
+            overflow: hidden;
+
+            background: white;
+        }
+
+        /* Pages */
+        .page {
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: fill;
+
+            background: white;
+
+            transition:
+                opacity 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        .page.hidden {
+            display: none;
+        }
+
+        /* Side controls */
+        .side-button {
+            width: 45px;
+            height: 70px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: rgba(255, 255, 255, 0.9);
+
+            font-size: 28px;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+        }
+
+        .side-button:hover {
+            background: white;
+        }
+
+        .side-button:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        /* Page number */
+        #pageNumber {
+            position: fixed;
+
+            top: 10px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            color: white;
+            
+            font-size: 14px;
+
+            z-index: 100;
+        }
+
+        #pageCover{
+            position: fixed;
+              top: 0px;
+               z-index: 15;
+               
+              
+                height: 5vh;
+                width: inherit;              
+            /* box-sizing: border-box; */
+                 background-color: rgba(0, 0, 0, 0.655); 
+                 color:  rgba(0, 0, 0, 0); 
+
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+
+            .viewer {
+                gap: 5px;
+            }
+
+            .flipbook {
+                width: calc(100vw - 70px);
+                height: 100vh;
+            }
+
+            .side-button {
+                width: 30px;
+                height: 55px;
+
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="viewer">
+
+        <button
+            class="side-button"
+            id="previousButton"
+            onclick="previousPage()">
+            ‹
+        </button>
+
+        <div class="flipbook" id="flipbook">
+            <!-- <div id ="pageCover">.
+    <div id="pageNumber">1 / 4</div>
+    </div> -->
+        </div>
+
+        <button
+            class="side-button"
+            id="nextButton"
+            onclick="nextPage()">
+            ›
+        </button>
+
+    </div>
+
+
+    <script>
+
+        const pages = [
+            "https://i.postimg.cc/KjDHscZx/page1better.jpg",
+            "https://i.postimg.cc/76vtHJhw/page2better.jpg",
+            "https://i.postimg.cc/P592yvmK/page3better.jpg",
+            "https://i.postimg.cc/WbfnpqYS/Whats-App-Image-2026-08-14-at-10-01-44-AM.jpg"
+        ];
+
+
+        const flipbook =
+            document.getElementById("flipbook");
+
+        const pageNumber =
+            document.getElementById("pageNumber");
+
+        const previousButton =
+            document.getElementById("previousButton");
+
+        const nextButton =
+            document.getElementById("nextButton");
+
+
+        let currentPage = 0;
+
+
+        /*
+         * Create pages
+         */
+        pages.forEach((src, index) => {
+
+            const img =
+                document.createElement("img");
+
+            img.src = src;
+
+            img.className = "page";
+
+            if (index !== 0) {
+                img.classList.add("hidden");
+            }
+
+            flipbook.appendChild(img);
+        });
+
+
+        const pageElements =
+            document.querySelectorAll(".page");
+
+
+        function updateUI() {
+
+            pageNumber.textContent =
+                `${currentPage + 1} / ${pages.length}`;
+
+            previousButton.disabled =
+                currentPage === 0;
+
+            nextButton.disabled =
+                currentPage === pages.length - 1;
+        }
+
+
+        function showPage(index) {
+
+            if (
+                index < 0 ||
+                index >= pages.length
+            ) {
+                return;
+            }
+
+            pageElements[currentPage]
+                .classList.add("hidden");
+
+            currentPage = index;
+
+            pageElements[currentPage]
+                .classList.remove("hidden");
+
+            updateUI();
+        }
+
+
+        function nextPage() {
+            showPage(currentPage + 1);
+        }
+
+
+        function previousPage() {
+            showPage(currentPage - 1);
+        }
+
+
+        updateUI();
+
+    </script>
+
+</body>
+</html>
